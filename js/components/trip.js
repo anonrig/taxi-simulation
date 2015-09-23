@@ -34,6 +34,7 @@ Trip.prototype.start = function() {
           that.createPolyline_(response);
         } else {
           console.error('Directions request failed due to ' + status);
+          that.taxi.setIdle(false);
         }
     });
 };
@@ -92,4 +93,3 @@ Trip.prototype.end_ = function() {
 Trip.events = {
     'LOAD': 'load'
 };
-

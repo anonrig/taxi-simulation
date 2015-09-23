@@ -1,4 +1,30 @@
-var cities = [
+function Bootstrapper() {
+    var mapContainer = document.getElementById('map'),
+        map = new google.maps.Map(mapContainer, {
+            zoom: 7,
+            center: {lat: 41.85, lng: -87.65}
+        });
+
+    var CHandler = new CustomerHandler();
+
+    var taxi = new Taxi('chicago, il');
+
+   
+    setInterval(function() {
+        var pendingCustomers = CHandler.getAvailable();
+        console.log('pendingCustomers', pendingCustomers.length)
+
+        if (!taxi.isIdle() && pendingCustomers) {
+            var activeCustomer = pendingCustomers[pendingCustomers.length - 1];
+            var trip = new Trip(taxi, activeCustomer, map);
+            trip.start();
+            CHandler.setIdle(activeCustomer.address)
+        }
+    }, 100);
+};
+
+
+Bootstrapper.cities = [
   [ "San Francisco, CA, US", 1857 ],
   [ "Oakland, CA, US", 924 ],
   [ "London, ENG, GB", 511 ],
@@ -176,36 +202,3 @@ var cities = [
   [ "Guildford, ENG, GB", 13 ],
   [ "Houston, TX, US", 13 ]
 ];
-
-$(document).ready(function() {
-    var mapContainer = document.getElementById('map'),
-        map = new google.maps.Map(mapContainer, {
-            zoom: 7,
-            center: {lat: 41.85, lng: -87.65}
-        });
-
-    var customerList = [];
-
-    cities.forEach(function(city) {
-        customerList.push(new Customer(city[0]));
-    });
-    var taxi = new Taxi('chicago, il'),
-        LosAngelesCustomer = new Customer('los angeles, ca'),
-        SanFranciscoCustomer = new Customer('san francisco, ca'),
-        testTrip = new Trip(taxi, SanFranciscoCustomer, map);
-    testTrip.start();
-
-    setInterval(function() {
-        // var pendingCustomers = customerList.filter(function(item) {
-        //     return !item.isIdle() && !item.isEnded;
-        // });
-
-        var pendingCustomers = customerList[0];
-        
-        if (!taxi.isIdle()) {
-            if (pendingCustomers.length > 0) {
-                var trip = new Trip(taxi, pendingCustomers[0], map);
-            }
-        }
-    }, 100);
-}); 
