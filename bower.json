@@ -1,0 +1,19 @@
+{
+  "name": "taxi-simulation",
+  "version": "0.1.0",
+  "homepage": "https://github.com/anonrig/taxi-simulation",
+  "authors": [
+    "Yagiz Nizipli <yagiznizipli@me.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "semantic": "semantic-ui#~2.1.4"
+  }
+}
