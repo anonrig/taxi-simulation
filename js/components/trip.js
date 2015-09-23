@@ -3,7 +3,9 @@ function Trip (taxi, customer, map) {
     this.customer = customer;
     this.directionsService = new google.maps.DirectionsService;
     this.line = null;
-    this.directionsDisplay = new google.maps.DirectionsRenderer;
+    this.directionsDisplay = new google.maps.DirectionsRenderer({
+        'preserveViewport': true
+    });
     this.startPoint = this.taxi.address;
     this.map = map;
     this.endPoint = this.customer.address;
@@ -17,7 +19,7 @@ Trip.prototype.init_ = function() {
 };
 
 /** Assume taxi and customer have both x and y coord */
-Trip.prototype.start = function() {
+Trip.prototype.start = function(callback) {
     /** for text purposes */
     var that = this;
 
@@ -31,17 +33,19 @@ Trip.prototype.start = function() {
     }, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
           that.directionsDisplay.setDirections(response);
-          that.createPolyline_(response);
+          that.createPolyline_(response, callback);
         } else {
           console.error('Directions request failed due to ' + status);
+          that.directionsDisplay.setMap(null);
           that.taxi.setIdle(false);
+          callback();
         }
     });
 };
 
 
 /** @private */
-Trip.prototype.createPolyline_ = function(result) {
+Trip.prototype.createPolyline_ = function(result, callback) {
     var that = this;
 
     this.line = new google.maps.Polyline({
@@ -63,14 +67,15 @@ Trip.prototype.createPolyline_ = function(result) {
     var count = 0;
     this.animateInterval = setInterval(function() {
         count++;
-        that.animate_(count);
+        that.animate_(count, callback);
     }, 20);
 };
 
 
-Trip.prototype.animate_ = function(count) {
+Trip.prototype.animate_ = function(count, callback) {
     if (count > 200) {
         this.end_();
+        callback();
         return clearInterval(this.animateInterval);
     }
 

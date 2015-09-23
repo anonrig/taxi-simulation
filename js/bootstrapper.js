@@ -1,26 +1,32 @@
 function Bootstrapper() {
     var mapContainer = document.getElementById('map'),
         map = new google.maps.Map(mapContainer, {
-            zoom: 7,
+            zoom: 3,
             center: {lat: 41.85, lng: -87.65}
         });
 
-    var CHandler = new CustomerHandler();
+    var CHandler = new CustomerHandler(),
+        THandler = new TaxiHandler();
 
-    var taxi = new Taxi('chicago, il');
-
-   
     setInterval(function() {
-        var pendingCustomers = CHandler.getAvailable();
-        console.log('pendingCustomers', pendingCustomers.length)
+        var pendingCustomers = CHandler.getAvailable(),
+            pendingTaxis = THandler.getAvailable();
 
-        if (!taxi.isIdle() && pendingCustomers) {
-            var activeCustomer = pendingCustomers[pendingCustomers.length - 1];
-            var trip = new Trip(taxi, activeCustomer, map);
-            trip.start();
-            CHandler.setIdle(activeCustomer.address)
+        console.log('pendingCustomers', pendingCustomers.length)
+        console.log('pendingTaxis', pendingCustomers.length)
+
+        if (pendingTaxis && pendingCustomers) {
+            var currentCustomer = pendingCustomers[pendingCustomers.length - 1],
+                currentTaxi = pendingTaxis[pendingTaxis.length - 1];
+
+            var trip = new Trip(currentTaxi, currentCustomer, map);
+            THandler.setIdle(currentTaxi.address)
+            trip.start(function() {
+                THandler.list.push(currentTaxi);
+            });
+            CHandler.setIdle(currentCustomer.address)
         }
-    }, 100);
+    }, 5000);
 };
 
 
