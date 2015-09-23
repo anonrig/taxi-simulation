@@ -28,7 +28,7 @@ function Bootstrapper() {
             });
             CHandler.setIdle(currentCustomer.address)
         }
-    }, 5000);
+    }, 500);
 };
 
 
