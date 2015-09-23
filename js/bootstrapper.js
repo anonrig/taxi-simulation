@@ -19,6 +19,8 @@ function Bootstrapper() {
             var currentCustomer = pendingCustomers[pendingCustomers.length - 1],
                 currentTaxi = pendingTaxis[pendingTaxis.length - 1];
 
+            if (!currentTaxi || !currentCustomer) return;
+            
             var trip = new Trip(currentTaxi, currentCustomer, map);
             THandler.setIdle(currentTaxi.address)
             trip.start(function() {
